@@ -6,6 +6,8 @@ services:
     depends_on:
       migrations:
         condition: service_completed_successfully
+    volumes:
+      - ./api:/app
   redis:
     image: "redis:alpine"
   postgres:
@@ -35,3 +37,5 @@ services:
         condition: service_healthy
   worker:
     build: worker/
+    depends_on:
+      - redis

@@ -2,6 +2,10 @@ import redis
 from contextlib import asynccontextmanager
 import asyncpg
 from fastapi import FastAPI, Request
+from database.engine import async_session
+from sqlalchemy import select
+from database.models import User
+from models import UserResponse
 
 cache = redis.Redis(host="redis", port=6379)
 
@@ -40,9 +44,8 @@ def hello():
     return "Hello World! I have been seen {} times.".format(count)
 
 
-@app.get("/users")
-async def users(request: Request):
-    db_pool = request.app.state.db_pool
-    async with db_pool.acquire() as connection:
-        result = await connection.fetch("SELECT name FROM users")
-        return result
+@app.get("/users",response_model=list[UserResponse])
+async def users():
+    async with async_session() as session:
+        result = await session.execute(select(User))
+        return result.scalars().all()
