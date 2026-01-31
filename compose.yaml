@@ -35,7 +35,23 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   worker:
     build: worker/
+    command: ["celery", "-A", "worker", "worker", "--loglevel=info"]
     depends_on:
-      - redis
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./worker:/app
