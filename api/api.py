@@ -15,16 +15,6 @@ celery_app = Celery("worker", broker="amqp://guest:guest@rabbitmq:5672//", backe
 app = FastAPI()
 
 
-def get_hit_count():
-    return cache.incr("hits")
-
-
-@app.get("/hit")
-def hello():
-    count = get_hit_count()
-    return "Hello World! I have been seen {} times.".format(count)
-
-
 @app.get("/users", response_model=list[UserResponse])
 async def users():
     """List all users."""
