@@ -55,16 +55,20 @@ async def create_task(x: int = Query(...),
     if user.credits - API_COST < 0:
         raise HTTPException(status_code=403, detail="Insufficient credits")
 
+    # Deduct user credits upon submission.
+    # For a fairer credit deduction implementation check the /fair_poll endpoint
     async with async_session() as session:
-        session.execute(update(User).where(User.name == user.name)
+        await session.execute(update(User).where(User.name == user.name)
         .values(credits=user.credits - API_COST))
+
+        await session.commit()
 
     task = celery_app.send_task("worker.add", args=[x, y])
     return TaskResponseBase(task_id=task.id)
 
 
 @app.get("/poll", response_model=TaskResponseState)
-def poll_task(task_id: str = Query(...)):
+def poll_task_state(task_id: str = Query(...)):
     """Poll task state.
 
     :arg task_id: Task id.
@@ -74,6 +78,11 @@ def poll_task(task_id: str = Query(...)):
     if result.ready():
         response.result = result.result
     return response
+
+
+@app.get("/fair_poll", response_model=TaskResponseState)
+def fair_poll_task(task_id: str = Query(...)):
+    pass
 
 
 @app.put("/credits/{user_name}", response_model=UserCreditsResponse)
@@ -92,7 +101,7 @@ async def update_user_credits(user_name: str,
     async with async_session() as session:
         result = await session.execute(
             update(User).where(User.name == user_name)
-            .values(credits=api_credits)
+            .values(credits=User.credits + api_credits)
             .returning(User.name, User.credits)
         )
 

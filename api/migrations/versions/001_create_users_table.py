@@ -19,17 +19,17 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table(
         "users",
-        sa.Column("api_key", sa.String(36), primary_key=True),
-        sa.Column("name", sa.String(255), nullable=False),
+        sa.Column("name", sa.String(255), primary_key=True, nullable=False),
+        sa.Column("api_key", sa.String(36), nullable=False),
         sa.Column("credits", sa.Integer, nullable=False),
     )
 
     op.execute(
         """
-        INSERT INTO users (name, api_key, credits) VALUES
-        ('admin',      '123e4567-e89b-12d3-a456-426614174000', 1000),
-        ('test_user1', '550e8400-e29b-41d4-a716-446655440000',  500),
-        ('test_user2', 'c56a4180-65aa-42ec-a945-5fd21dec0538',  250)
+        INSERT INTO users (name, api_key, credits)
+        VALUES ('admin', '123e4567-e89b-12d3-a456-426614174000', 1000),
+               ('test_user1', '550e8400-e29b-41d4-a716-446655440000', 500),
+               ('test_user2', 'c56a4180-65aa-42ec-a945-5fd21dec0538', 250)
         """
     )
 

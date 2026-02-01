@@ -8,10 +8,10 @@ class User(Base):
     """User model."""
     __tablename__ = "users"
 
-    name = Column(String(255),  primary_key=True, nullable=False)
+    name = Column(String(255), primary_key=True, nullable=False)
     """Username."""
 
-    api_key = Column(String(36),nullable=False)
+    api_key = Column(String(36), nullable=False)
     """API key."""
 
     credits = Column(Integer, nullable=False)
@@ -22,6 +22,7 @@ class User(Base):
 
     task_history = relationship("UserTaskHistory", back_populates="user")
 
+
 class UserTaskHistory(Base):
     """User task history model."""
     __tablename__ = "user_task_history"
@@ -29,7 +30,7 @@ class UserTaskHistory(Base):
     user_name = Column(String(255), ForeignKey("users.name"), primary_key=True, nullable=False)
     """Username of the user who performed the task."""
 
-    task_id = Column(String(255), nullable=False)
+    task_id = Column(String(255), primary_key=True, nullable=False)
     """Task ID."""
 
     cost = Column(Integer, nullable=False)
@@ -40,6 +41,3 @@ class UserTaskHistory(Base):
 
     # Relations
     user = relationship("User", back_populates="task_history")
-
-
-
