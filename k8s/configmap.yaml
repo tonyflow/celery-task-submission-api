@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: api-playground
+data:
+  POSTGRES_USER: postgres
+  POSTGRES_DB: postgres
+  REDIS_HOST: redis
+  RABBITMQ_HOST: rabbitmq
+  DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+  CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+  CELERY_RESULT_BACKEND: redis://redis:6379/0

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: api-playground
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      initContainers:
+        - name: wait-for-rabbitmq
+          image: busybox:1.28
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z rabbitmq 5672; do
+                echo "Waiting for rabbitmq..."
+                sleep 2
+              done
+        - name: wait-for-redis
+          image: busybox:1.28
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z redis 6379; do
+                echo "Waiting for redis..."
+                sleep 2
+              done
+      containers:
+        - name: worker
+          image: api-playground-worker:latest
+          imagePullPolicy: Never
+          command: ["celery", "-A", "worker", "worker", "--loglevel=info"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD

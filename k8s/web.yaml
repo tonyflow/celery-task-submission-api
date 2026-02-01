@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: api-playground
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      initContainers:
+        - name: wait-for-migrations
+          image: bitnami/kubectl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until kubectl get job migrations -n api-playground -o jsonpath='{.status.succeeded}' | grep -q 1; do
+                echo "Waiting for migrations to complete..."
+                sleep 5
+              done
+      containers:
+        - name: web
+          image: api-playground-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          command: ["uvicorn", "api:app", "--host", "0.0.0.0"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: api-playground
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30080
