@@ -2,13 +2,15 @@ import logging
 
 from fastapi import HTTPException
 from fastapi.params import Depends
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 
 from database.engine import async_session
 from database.models import User
 
 _logger = logging.getLogger(__name__)
+
+security = HTTPBearer()
 
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
