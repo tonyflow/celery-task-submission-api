@@ -8,7 +8,7 @@ services:
       migrations:
         condition: service_completed_successfully
     volumes:
-      - ./api:/app
+      - ./api:/code
   redis:
     image: "redis:alpine"
   postgres:
