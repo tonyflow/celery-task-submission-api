@@ -30,8 +30,11 @@ async def create_addition_task(user: User, x: int, y: int) -> TaskResponseBase:
     # 2. Deduct user credits upon submission.
     # For a fairer credit deduction implementation check the /fair_poll endpoint
     async with async_session() as session:
+        # 3. Trace task history for user
         await session.execute(insert(UserTaskHistory).values(user_name=user.name, task_id=task.id, cost=API_COST))
-        await session.execute(update(User).where(User.name == user.name).values(credits=user.credits - API_COST))
+
+        # 4. Deduct user credits
+        await session.execute(update(User).where(User.name == user.name).values(credits=User.credits - API_COST))
 
         # Commit changes
         await session.commit()
@@ -74,8 +77,6 @@ async def get_user_credits(user_name: str) -> UserCreditsResponse:
 
         if user is None:
             raise HTTPException(status_code=404, detail="User not found.")
-
-        await session.commit()
 
         return UserCreditsResponse(name=user.name, credits=user.credits)
 

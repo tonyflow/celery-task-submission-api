@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class UserResponseBase(BaseModel):
@@ -6,6 +6,7 @@ class UserResponseBase(BaseModel):
 
     name: str
     """User name"""
+
 
 class UserCreditsResponse(UserResponseBase):
     """User response model."""
@@ -29,3 +30,12 @@ class TaskStateResponse(TaskResponseBase):
 
     result: int | None = None
     """Task result."""
+
+
+class CachedUserValue(BaseModel):
+    """Cache user value model."""
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    credits: int
+    api_key: str

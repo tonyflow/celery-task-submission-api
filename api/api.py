@@ -1,16 +1,13 @@
 import logging
 
-import redis
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.params import Depends
-from fastapi.security import HTTPBearer
 
 import auth
 import service
 from database.models import User
 from models import UserResponseBase, TaskResponseBase, TaskStateResponse, UserCreditsResponse
 
-cache = redis.Redis(host="redis", port=6379)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 _logger = logging.getLogger(__name__)
@@ -21,7 +18,7 @@ app = FastAPI()
 @app.get("/users", response_model=list[UserResponseBase])
 async def users():
     """List all users."""
-    return service.get_all_users()
+    return await service.get_all_users()
 
 
 @app.post("/task", response_model=TaskResponseBase)
