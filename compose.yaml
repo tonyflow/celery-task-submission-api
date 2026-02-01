@@ -3,6 +3,7 @@ services:
     build: api/
     ports:
       - "8000:8000"
+    command: ["uvicorn", "api:app", "--host", "0.0.0.0"]
     depends_on:
       migrations:
         condition: service_completed_successfully

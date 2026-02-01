@@ -7,6 +7,12 @@ class UserResponse(BaseModel):
     name: str
     """User name"""
 
+class UserCreditsResponse(UserResponse):
+    """User response model."""
+
+    credits: int
+    """Leftover user credits."""
+
 
 class TaskResponseBase(BaseModel):
     """Task response base model."""
