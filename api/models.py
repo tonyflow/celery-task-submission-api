@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 
 
-class UserResponse(BaseModel):
+class UserResponseBase(BaseModel):
     """User response model."""
 
     name: str
     """User name"""
 
-class UserCreditsResponse(UserResponse):
+class UserCreditsResponse(UserResponseBase):
     """User response model."""
 
     credits: int
@@ -21,7 +21,7 @@ class TaskResponseBase(BaseModel):
     """Task id."""
 
 
-class TaskResponseState(TaskResponseBase):
+class TaskStateResponse(TaskResponseBase):
     """Task response state and result."""
 
     state: str

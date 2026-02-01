@@ -61,6 +61,6 @@ services:
 
 volumes:
   rabbitmq-data:
-    name: rabbitmq-data
+    name: bfl-rabbitmq-data
   postgres-data:
-    name: postgres-data
+    name: bfl-postgres-data

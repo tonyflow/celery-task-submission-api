@@ -1,6 +1,8 @@
+import datetime
+
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
-
+from sqlalchemy.sql import func
 Base = declarative_base()
 
 
@@ -36,7 +38,7 @@ class UserTaskHistory(Base):
     cost = Column(Integer, nullable=False)
     """Cost of task in credits."""
 
-    created_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=func.now())
     """Timestamp of when the task was performed."""
 
     # Relations
