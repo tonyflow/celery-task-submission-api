@@ -7,7 +7,7 @@ import pytest
 mock_redis = MagicMock()
 sys.modules["redis"] = mock_redis
 mock_redis_instance = MagicMock()
-mock_redis_instance.hget.return_value = None  # No cached user by default
+mock_redis_instance.hget.return_value = None  # No cached user
 mock_redis.Redis.return_value = mock_redis_instance
 
 from fastapi.testclient import TestClient
@@ -79,7 +79,7 @@ class TestCreateAdditionTask:
         with patch("api.service.create_addition_task", new_callable=AsyncMock) as mock_create:
             mock_create.return_value = TaskResponseBase(task_id="task-123")
 
-            response = client_with_user.post("/task?x=5&y=3", headers={"Authorization": "Bearer test-token"})
+            response = client_with_user.post("/task?x=5&y=3", headers={"Authorization": "Bearer test-api-key"})
 
             assert response.status_code == 200
             data = response.json()
@@ -117,7 +117,7 @@ class TestGetUserCredits:
         with patch("api.service.get_user_credits", new_callable=AsyncMock) as mock_get_credits:
             mock_get_credits.return_value = UserCreditsResponse(name="test_user", credits=500)
 
-            response = client_with_admin.get("/credits/test_user", headers={"Authorization": "Bearer admin-token"})
+            response = client_with_admin.get("/credits/test_user", headers={"Authorization": "Bearer admin-api-key"})
 
             assert response.status_code == 200
             data = response.json()
@@ -132,7 +132,7 @@ class TestUpdateUserCredits:
 
             response = client_with_admin.put(
                 "/credits/test_user?api_credits=100",
-                headers={"Authorization": "Bearer admin-token"}
+                headers={"Authorization": "Bearer admin-api-key"}
             )
 
             assert response.status_code == 200
