@@ -14,16 +14,28 @@ spec:
         app: web
     spec:
       initContainers:
-        - name: wait-for-migrations
-          image: bitnami/kubectl:latest
-          command:
-            - sh
-            - -c
-            - |
-              until kubectl get job migrations -n api-playground -o jsonpath='{.status.succeeded}' | grep -q 1; do
-                echo "Waiting for migrations to complete..."
-                sleep 5
-              done
+        - name: wait-for-postgres
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nc -z postgres 5432; do echo "Waiting for postgres..."; sleep 2; done']
+        - name: run-migrations
+          image: api-playground-api:latest
+          imagePullPolicy: Never
+          command: ["alembic", "upgrade", "head"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: POSTGRES_PASSWORD
+        - name: wait-for-rabbitmq
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nc -z rabbitmq 5672; do echo "Waiting for rabbitmq..."; sleep 2; done']
+        - name: wait-for-redis
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nc -z redis 6379; do echo "Waiting for redis..."; sleep 2; done']
       containers:
         - name: web
           image: api-playground-api:latest

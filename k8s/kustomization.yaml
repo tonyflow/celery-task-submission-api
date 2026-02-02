@@ -10,6 +10,5 @@ resources:
   - postgres.yaml
   - redis.yaml
   - rabbitmq.yaml
-  - migrations-job.yaml
   - web.yaml
   - worker.yaml

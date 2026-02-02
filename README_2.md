@@ -13,3 +13,8 @@ export PYTHONPATH=api/
 pytest -vvv api/tests/
 ```
 9. Was not sure if I was supposed to change the worker implementation so I did not write any test for it.
+10. The caching in the `get_current_user` is just for 
+
+## TODO
+1. Check k8s
+2. Check tests

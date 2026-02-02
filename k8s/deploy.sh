@@ -23,20 +23,10 @@ kubectl wait --for=condition=ready pod -l app=postgres -n api-playground --timeo
 kubectl wait --for=condition=ready pod -l app=redis -n api-playground --timeout=60s
 kubectl wait --for=condition=ready pod -l app=rabbitmq -n api-playground --timeout=120s
 
-echo "==> Waiting for migrations job..."
-kubectl wait --for=condition=complete job/migrations -n api-playground --timeout=120s || true
-
 echo "==> Waiting for web deployment..."
-kubectl wait --for=condition=available deployment/web -n api-playground --timeout=120s || true
+kubectl wait --for=condition=available deployment/web -n api-playground --timeout=180s || true
 
 echo ""
 echo "==> Deployment complete!"
 echo "API available at: http://localhost:8000"
 echo ""
-echo "Useful commands:"
-echo "  kubectl get pods -n api-playground"
-echo "  kubectl logs -f deployment/web -n api-playground"
-echo "  kubectl logs -f deployment/worker -n api-playground"
-echo ""
-echo "To delete the cluster:"
-echo "  kind delete cluster --name api-playground"

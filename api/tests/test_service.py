@@ -1,6 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 from fastapi import HTTPException
 
 from database.models import User
@@ -10,7 +10,6 @@ from service import (
     poll_task_state,
     get_user_credits,
     update_user_credits,
-    API_COST,
 )
 
 

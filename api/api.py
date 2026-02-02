@@ -15,6 +15,12 @@ _logger = logging.getLogger(__name__)
 app = FastAPI()
 
 
+@app.get("/health")
+def health():
+    """Health check endpoint."""
+    return {"status": "ok"}
+
+
 @app.get("/users", response_model=list[UserResponseBase])
 async def users():
     """List all users."""
