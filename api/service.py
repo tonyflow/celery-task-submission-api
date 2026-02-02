@@ -15,12 +15,23 @@ API_COST = 10
 
 
 async def get_all_users() -> list[User]:
+    """Retrieve all users' names."""
     async with async_session() as session:
         result = await session.execute(select(User))
         return result.scalars().all()
 
 
 async def create_addition_task(user: User, x: int, y: int) -> TaskResponseBase:
+    """Create addition task.
+
+    Args:
+        user (User): User triggering the task.
+        x (int): First operand.
+        y (int): Second operand.
+
+    Returns:
+        TaskResponseBase: Task response including the spawned task ID.
+    """
     if user.credits - API_COST < 0:
         raise HTTPException(status_code=403, detail="Insufficient credits")
 
@@ -43,6 +54,15 @@ async def create_addition_task(user: User, x: int, y: int) -> TaskResponseBase:
 
 
 def poll_task_state(task_id: str) -> TaskStateResponse:
+    """Poll task state.
+
+    Args:
+        task_id (str): Celery Task ID.
+
+    Returns:
+        TaskStateResponse: The json includes the task ID itself, the state (SUCCESS, PENDING...)
+        and if the task has completed successfully, the result will be part of the response.
+    """
     result = celery_instance.AsyncResult(task_id)
     response = TaskStateResponse(task_id=task_id, state=result.state)
     if result.ready():
@@ -52,6 +72,20 @@ def poll_task_state(task_id: str) -> TaskStateResponse:
 
 
 async def fair_poll_task_state(user: User, task_id: str) -> TaskResponseBase:
+    """(Fair) Poll task state.
+
+    The difference with the regular poll_task_state is that this function will only update the
+    user's credits if the task has completed successfully. If this is to be used, the credit
+    deduction should be removed from the create_addition_task function.
+
+    Args:
+        user (User): User triggering the task.
+        task_id (str): Celery Task ID.
+
+    Returns:
+        TaskStateResponse: The json includes the task ID itself, the state (SUCCESS, PENDING...)
+        and if the task has completed successfully, the result will be part of the response.
+    """
     task_state_response = poll_task_state(task_id)
 
     # 1. Make sure that the task has been completed and a result has been computed and only then,
