@@ -14,6 +14,7 @@ pytest -vvv api/tests/
 ```
 9. Was not sure if I was supposed to change the worker implementation so I did not write any test for it.
 10. The caching in the `get_current_user` is just for 
+11. The k8s deployment is fully functional but I did not plug it to a cloud environment. If you're using `kind`, you can use `deploy.sh` to bootstrap the cluster.
 
 ## TODO
 1. Check k8s
