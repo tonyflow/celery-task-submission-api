@@ -1,17 +1,17 @@
 ### Notes on the implementation
-* `hit.sh` has been updated to create a task and poll until the task is completed.
+* `./utils/hit.sh` has been updated to create a task and poll until the task is completed.
 * To run the `pytest`s
 ```bash
 cd /path/to/root/of/api_playground
 export PYTHONPATH=api/
 pytest -vvv api/tests/
 ```
-* Was not sure if I was supposed to change the worker implementation so I did not write any tests for it. We can test arithmetic overflows at a later stage.
+* I was not sure if I was supposed to change the worker implementation - I assumed not - so I did not write any tests for it. We can test arithmetic overflows at a later stage.
 * The cache in the `get_current_user` is just for showcase and the docs describe its limitations.
 * The cache can also be used to cache addition results.
-* The k8s deployment is fully functional but I did not plug it to a cloud environment. If you're using `kind`, you can use `./k8s/deploy.sh` to bootstrap the cluster.
+* The k8s deployment is fully functional but I did not plug it to a cloud environment. If you're using [`kind`](https://kind.sigs.k8s.io/), you can use `./k8s/deploy.sh` to bootstrap the cluster. Otherwise, you can just check the manifests.
 * The docker deployment uses a process pool of size 5 (`concurrency=5`)
-* Persistent volumes have been created to store both Postgres and RabbitMQ data. `PersistentVolumeClaims` for k8s.
+* Persistent volumes have been created to store both Postgres and RabbitMQ data. `PersistentVolumeClaim`s for k8s.
 
 ### TODOs
 1. Move all `HTTPException`s from `service.py` to `api.py` using `try/except` blocks on the API level to translate service level errors to web layer errors.
