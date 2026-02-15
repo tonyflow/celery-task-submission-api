@@ -1,4 +1,7 @@
 ### Notes on the implementation
+* Replaced plain SQL statements in the code with an ORM integration - SQLAlchemy.
+* The way of running the stack locally with Docker has not changed. You can still run it using `docker compose up --build -d` and  access the API under http://localhost:8000
+* HTTP metrics have been added under /metrics using the Prometheus FastAPI Instrumentator
 * `./utils/hit.sh` has been updated to create a task and poll until the task is completed.
 * To run the `pytest`s
 ```bash
